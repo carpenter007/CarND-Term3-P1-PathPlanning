@@ -400,7 +400,7 @@ int main() {
                 {
                   // Make sure that a lane change over two lanes is done in two anchor point steps to avoid to much jerk
                   next_wp0 = getXY(car_s + 1*(FAR_RANGE_IN_METERS * 1.0)/3.0, (2+4*1), map_waypoints_s, map_waypoints_x, map_waypoints_y);
-                  next_wp1 = getXY(car_s + 2*(FAR_RANGE_IN_METERS * 1.0)/3.0, (2+4*itLanes), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+                  next_wp1 = getXY(car_s + 2*(FAR_RANGE_IN_METERS * 1.0)/3.0, (2+4*1), map_waypoints_s, map_waypoints_x, map_waypoints_y);
                   next_wp2 = getXY(car_s + 3*(FAR_RANGE_IN_METERS * 1.0)/3.0, (2+4*itLanes), map_waypoints_s, map_waypoints_x, map_waypoints_y);
                 }
                 else
@@ -547,13 +547,28 @@ int main() {
               lastTrajectory = bestTrajectory;
 
               // If there is no good trajectory to go, decrease the velocity of our car
-              if((bestCost < REDUCE_VELOCITY_COST_THRESHOLD) && (v_dest < MAX_SPEED_MPH))
+              if((bestCost < REDUCE_VELOCITY_COST_THRESHOLD) && (v_dest < MAX_SPEED_MPH-10.0))
+              {
+                v_dest += 1.344;
+              }
+              else if((bestCost < REDUCE_VELOCITY_COST_THRESHOLD) && (v_dest < MAX_SPEED_MPH))
               {
                 v_dest += 0.448;
               }
-              else if(v_dest > 0.5)
+              else if(v_dest > 10.0)
               {
-                v_dest -= 0.224 * bestCost;
+                if( 0.224 * bestCost <= 1.344)
+                {
+                  v_dest -= 0.224 * bestCost;
+                }
+                else
+                {
+                  v_dest -= 1.344;
+                }
+              }
+              else
+              {
+                v_dest -= 0.224;
               }
               std::cout << std::endl;
 
